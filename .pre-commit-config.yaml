@@ -4,7 +4,7 @@ repos:
     hooks:
       - id: pretty-format-json
         args: [--autofix]
-        exclude: &ex (^react-front|^nextjs/|^migrations/|^static/|^nginx/|^media/|^node_modules/|^__pycache__/|^.pytest_cache/|^\.mypy_cache/|.vscode/|extra_static/|\.git/|\.github/|\.idea/)
+        exclude: &ex (^migrations/|^static/|^nginx/|^media/|^node_modules/|^__pycache__/|^.pytest_cache/|^\.mypy_cache/|.vscode/|extra_static/|\.git/|\.github/|\.idea/)
       - id: check-yaml
         exclude: *ex
       - id: check-toml
@@ -27,7 +27,7 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
-        args: [--config=./api/pyproject.toml]
+        args: [--config=./pyproject.toml]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.17.0
@@ -45,10 +45,11 @@ repos:
 
   - repo: local
     hooks:
-      - id: check-api-version
-        name: Check API Version
-        entry: python ./check_api_version.py
-        language: python
-        additional_dependencies: [ toml ]
+      - id: bump-version
+        name: Bump Version
+        entry: python bump_version.py
+        language: system
         pass_filenames: false
         always_run: true
+        stages: [ pre-commit ]
+        require_serial: true

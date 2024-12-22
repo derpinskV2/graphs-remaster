@@ -4,53 +4,48 @@ import re
 import subprocess
 from pathlib import Path
 
-SETTINGS_FILE = Path("api/djongo/settings.py")
-PYPROJECT_FILE = Path("api/pyproject.toml")
-VERSION_PATTERN = r"^\d+\.\d+\.\d{3}(-dev\d+)?$"
+PYPROJECT_FILE = Path("pyproject.toml")
+VERSION_PATTERN = r"^v?\d+\.\d+\.\d{2}$"
 
 
 def validate_version(version_string):
     if not re.match(VERSION_PATTERN, version_string):
-        raise ValueError(f"Invalid version format: {version_string}. " f"Expected format: 0.1.903 or 0.1.903-dev1")
+        raise ValueError(f"Invalid version format: {version_string}. " f"Expected format: v0.1.90")
 
 
 def bump_version(version_string):
     validate_version(version_string)
-    base_version = version_string.split("-")[0]  # Remove dev suffix if present
-    match = re.match(r"(\d+)\.(\d+)\.(\d{3})", base_version)
-    major, minor, patch = map(int, match.groups())
+
+    # Remove dev suffix, if present
+    base_version = version_string.split("-")[0]
+
+    # updated to match the 2-digit patch
+    match = re.match(r"^v?(\d+)\.(\d+)\.(\d{2})$", base_version)
+    if not match:
+        raise ValueError(f"Invalid version format: {version_string}")
+
+    major_str, minor_str, patch_str = match.groups()
+    major = int(major_str)
+    minor = int(minor_str)
+    patch = int(patch_str)
 
     patch += 1
-    if patch > 999:
+    if patch > 99:
         minor += 1
         patch = 0
-    if minor > 99:
+    if minor > 9:
         major += 1
         minor = 0
 
-    new_version = f"{major}.{minor}.{patch:03d}"
+    new_version = f"v{major}.{minor}.{patch:02d}"
 
-    # Preserve dev suffix if it existed
+    # If we had a -dev suffix, re-append it
     if "-dev" in version_string:
         dev_match = re.search(r"-dev(\d+)", version_string)
         if dev_match:
             new_version += f"-dev{dev_match.group(1)}"
 
     return new_version
-
-
-def update_version_in_settings(new_version):
-    with open(SETTINGS_FILE) as file:
-        content = file.read()
-
-    pattern = r'API_VERSION\s*=\s*["\'](.+?)["\']'
-    if re.search(pattern, content):
-        updated_content = re.sub(pattern, lambda m: f'API_VERSION = "{new_version}"', content)
-    else:
-        updated_content = content + f'\n\nAPI_VERSION = "{new_version}"\n'
-
-    with open(SETTINGS_FILE, "w") as file:
-        file.write(updated_content)
 
 
 def update_version_in_pyproject(new_version):
@@ -83,14 +78,12 @@ def main():
         validate_version(current_version)
         new_version = bump_version(current_version)
 
-        update_version_in_settings(new_version)
         update_version_in_pyproject(new_version)
 
         print(f"Bumped version from {current_version} to {new_version}")
-        print(f"Updated {SETTINGS_FILE} and {PYPROJECT_FILE}")
 
         # Stage the updated files
-        subprocess.run(["git", "add", str(SETTINGS_FILE), str(PYPROJECT_FILE)])
+        subprocess.run(["git", "add", str(PYPROJECT_FILE)])
 
         return 0
     except ValueError as e:
