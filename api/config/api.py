@@ -26,6 +26,7 @@ v1 = NinjaExtraAPI(
     description="I am actually going to finish this side project™",
     parser=ORJSONParser(),
     renderer=ORJSONRenderer(),
+    docs_url="/docs/",
 )
 
 

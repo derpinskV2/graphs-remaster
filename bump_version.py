@@ -1,15 +1,22 @@
-#!/usr/bin/env python3
-
+import logging
 import re
 import subprocess
 from pathlib import Path
 
-PYPROJECT_FILE = Path("pyproject.toml")
+logging.basicConfig(
+    filename="version_bump.log",
+    filemode="a",
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
+PYPROJECT_FILE = Path("api/pyproject.toml")
 VERSION_PATTERN = r"^v?\d+\.\d+\.\d{2}$"
 
 
 def validate_version(version_string):
     if not re.match(VERSION_PATTERN, version_string):
+
         raise ValueError(f"Invalid version format: {version_string}. " f"Expected format: v0.1.90")
 
 
@@ -38,12 +45,6 @@ def bump_version(version_string):
         minor = 0
 
     new_version = f"v{major}.{minor}.{patch:02d}"
-
-    # If we had a -dev suffix, re-append it
-    if "-dev" in version_string:
-        dev_match = re.search(r"-dev(\d+)", version_string)
-        if dev_match:
-            new_version += f"-dev{dev_match.group(1)}"
 
     return new_version
 

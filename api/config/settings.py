@@ -1,15 +1,20 @@
 from pathlib import Path
 import environ
+import toml
+import logging
 
-# jesus christ
-api_folder = Path(__file__).resolve().parent.parent
+logger = logging.getLogger(__name__)
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 env = environ.Env()
-environ.Env.read_env(Path(__file__).joinpath(api_folder, "secrets/.env"))
+environ.Env.read_env(Path(__file__).joinpath(BASE_DIR, "secrets/.env"))
 
-API_VERSION = "0.1.04"
+pyproject = toml.load(f"{BASE_DIR}/pyproject.toml")
+API_VERSION = pyproject["tool"]["poetry"]["version"]
 
 # Boring
-BASE_DIR = Path(__file__).resolve().parent.parent
 ADMIN_USERNAME = env("ADMIN_USERNAME")
 ADMIN_PASSWORD = env("ADMIN_PASSWORD")
 ADMIN_EMAIL = env("ADMIN_EMAIL")
@@ -27,10 +32,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS")
 
 
-# Soy
 DEBUG: bool = env.bool("DEBUG")
 SECRET_KEY: str = env.str("SECRET_KEY")
-
+INTERNAL_IPS = ["127.0.0.1"]
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "wsgi.application"
 ASGI_APPLICATION = "asgi.application"
@@ -40,10 +44,6 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-
-INTERNAL_IPS = ["127.0.0.1"]
-
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -51,12 +51,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Local apps
     "core.apps.CoreConfig",
-    # "corsheaders",
+    "data.apps.DataConfig",
+    # Third party
+    "corsheaders",
     "ninja",
     # "ninja_jwt",
     # "ninja_jwt.token_blacklist",
-    # "ninja_extra",
+    "ninja_extra",
     # "nested_admin",
     # "django_celery_beat",
     # "django_celery_results",

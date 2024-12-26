@@ -35,8 +35,7 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PREFIX="SOY"
-          BRANCH_NAME="${ISSUE_NUMBER}-${PREFIX}-$(echo "${ISSUE_TITLE}" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
+          BRANCH_NAME="${ISSUE_NUMBER}-$(echo "${ISSUE_TITLE}" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
           echo "Branch name: $BRANCH_NAME"
 
           # Create and push branch
@@ -61,7 +60,7 @@ jobs:
       - name: Link issue to project
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          PROJECT_ID: ${{ secrets.PROJECT_ID }} # Set this in your repository secrets
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \

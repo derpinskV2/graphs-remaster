@@ -75,4 +75,5 @@ if __name__ == "__main__":
     uvicorn.run(
         app="config.asgi:application",
         **uvicorn_configuration,
+        reload_includes=["*.py, *.html"],
     )

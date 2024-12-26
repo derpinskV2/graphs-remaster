@@ -15,8 +15,6 @@ repos:
         exclude: *ex
       - id: trailing-whitespace
         exclude: *ex
-      - id: check-added-large-files
-        exclude: *ex
       - id: check-merge-conflict
       - id: mixed-line-ending
         args: [--fix=lf]
@@ -27,7 +25,7 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
-        args: [--config=./pyproject.toml]
+        args: [--config=./api/pyproject.toml]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.1

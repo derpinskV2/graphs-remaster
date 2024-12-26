@@ -5,5 +5,5 @@ COPY default.conf /etc/nginx/conf.d/
 COPY nginx.conf /etc/nginx/
 
 
-EXPOSE 80
-EXPOSE 443
+#EXPOSE 80
+#EXPOSE 443

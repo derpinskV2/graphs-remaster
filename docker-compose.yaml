@@ -8,9 +8,9 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
+#      - "443:443"
     depends_on:
-      - django
+      - backend
     volumes:
       - static_volume:/app/static:ro
       - media_volume:/app/media:ro
@@ -37,12 +37,12 @@ services:
       timeout: 10s
       retries: 5
 
-  django:
+  backend:
     build:
         context: ./api
         dockerfile: Dockerfile
-    container_name: djongo
-    hostname: djongo
+    container_name: backend
+    hostname: backend
     restart: unless-stopped
     #poetry run python manage.py startup &&
     command: >
@@ -58,8 +58,8 @@ services:
       - "8000"
     volumes:
       - ./api:/app:z
-      - static_volume:/app/static
-      - media_volume:/app/media
+      - static_volume:/app/static:z
+      - media_volume:/app/media:z
     depends_on:
       - db
     networks:
@@ -77,14 +77,14 @@ networks:
 # TODO: Uncomment when needed.
 #  celery:
 #    build:
-#        context: ./djongo
+#        context: ./api
 #        dockerfile: Dockerfile
 #    container_name: un-celery
 #    hostname: un-celery
 #    restart: unless-stopped
 #    command: poetry run celery -A unnamed_webapp worker --loglevel=info -E --max-tasks-per-child=20
 #    volumes:
-#      - ./djongo:/app:z
+#      - ./api:/app:z
 #    env_file:
 #      - ./secrets/.env
 #    networks:
@@ -95,14 +95,14 @@ networks:
 #
 #  celery-beat:
 #    build:
-#        context: ./djongo
+#        context: ./api
 #        dockerfile: Dockerfile
 #    container_name: belery-ceat
 #    hostname: belery-ceat
 #    restart: unless-stopped
-#    command: poetry run celery -A djongo beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+#    command: poetry run celery -A api beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
 #    volumes:
-#      - ./djongo:/app:z
+#      - ./api:/app:z
 #    env_file:
 #      - ./secrets/.env
 #    depends_on:

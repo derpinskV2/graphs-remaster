@@ -1,3 +1,7 @@
 ### @name: I hate postman I hate postman I hate postman
 GET http://localhost/api/v1/hello HTTP/1.1
 Content-Type: application/json
+
+###
+GET http://localhost/api/v1/docs HTTP/1.1
+Content-Type: application/json
