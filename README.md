@@ -4,7 +4,4 @@ ____
 ## Usage
 - l2p
 ## Notable features
-- 0% Test coverage
-- Useless for anyone not using certain csv structure
-- Force Bump API version every commit (for some reason)
-- Automatic branch creation from Issue
+- 👌👀👌👀👌👀👌👀👌👀 good shit go౦ԁ sHit👌 thats ✔ some good👌👌shit right👌👌there👌👌👌 right✔there ✔✔if i do ƽaү so my self 💯 i say so 💯 thats what im talking about right there right there (chorus: ʳᶦᵍʰᵗ ᵗʰᵉʳᵉ) mMMMMᎷМ💯 👌👌 👌НO0ОଠOOOOOОଠଠOoooᵒᵒᵒᵒᵒᵒᵒᵒᵒ👌 👌👌 👌 💯 👌 👀 👀 👀 👌👌Good shit
