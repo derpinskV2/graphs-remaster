@@ -13,16 +13,16 @@ class CSVFile(CustomModel):
 
 
 class CSVData(CustomModel):
+    user = models.ForeignKey("core.CustomUser", on_delete=models.CASCADE)
     bg = models.FloatField()
     bg_input = models.FloatField(blank=True, null=True)
     carb_input = models.FloatField(blank=True, null=True)
     insulin_delivered = models.FloatField(blank=True, null=True)
     total_insulin = models.FloatField(blank=True, null=True)
-
     bolus = models.FloatField(blank=True, null=True)
     event = models.CharField(max_length=255, blank=True, null=True)
-
     serial_number = models.CharField(max_length=255)
+    timestamp = models.DateTimeField()
 
     class Meta:
         verbose_name_plural = "CSV Data"

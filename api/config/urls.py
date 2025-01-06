@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path
-from .api import v1
 from django.conf import settings
+
+from config.api import v1
 
 urlpatterns = [
     path("api/v1/admin/", admin.site.urls),

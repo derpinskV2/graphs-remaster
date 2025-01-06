@@ -1,9 +1,10 @@
 import orjson
+import logging
 from ninja.parser import Parser
 from ninja.renderers import BaseRenderer
 from ninja_extra import NinjaExtraAPI
-import logging
 from django.conf import settings
+from ninja_jwt.controller import NinjaJWTDefaultController
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +31,18 @@ v1 = NinjaExtraAPI(
 )
 
 
-@v1.get("/hello")
-def hello(request):
-    return {"message": "Hello, World!"}
+v1.register_controllers("data.api.controllers.CSVFileController")
+v1.register_controllers("data.api.controllers.CSVDataController")
+v1.register_controllers(NinjaJWTDefaultController)
+
+from .celery import debug_task
+
+
+@v1.get("/debug-celery")
+def health(request):
+    try:
+        debug_task.delay()
+    except Exception as e:
+        logger.exception(e)
+
+    return {"Hello": "123"}

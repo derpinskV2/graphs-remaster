@@ -62,8 +62,45 @@ services:
       - media_volume:/app/media:z
     depends_on:
       - db
+      - redis
     networks:
       - netwoke
+
+  redis:
+    image: redis:7.4.1
+    container_name: redis
+    hostname: redis
+    restart: unless-stopped
+    expose:
+      - "6379"
+    networks:
+      - netwoke
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  celery:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: queue
+    hostname: queue
+    restart: unless-stopped
+    command: poetry run celery -A config worker --loglevel=info -E --max-tasks-per-child=20 -P threads --concurrency=6
+    volumes:
+      - ./api:/app:z
+      - static_volume:/app/static:z
+      - media_volume:/app/media:z
+    env_file:
+      - ./api/secrets/.env
+    networks:
+      - netwoke
+    depends_on:
+      - backend
+      - redis
+      - db
 
 volumes:
   static_volume:
@@ -74,54 +111,20 @@ networks:
   netwoke:
     driver: bridge
 
-# TODO: Uncomment when needed.
-#  celery:
-#    build:
-#        context: ./api
-#        dockerfile: Dockerfile
-#    container_name: un-celery
-#    hostname: un-celery
-#    restart: unless-stopped
-#    command: poetry run celery -A unnamed_webapp worker --loglevel=info -E --max-tasks-per-child=20
-#    volumes:
-#      - ./api:/app:z
-#    env_file:
-#      - ./secrets/.env
-#    networks:
-#      - netwoke
-#    depends_on:
-#      - redis
-#      - db
-#
 #  celery-beat:
 #    build:
 #        context: ./api
 #        dockerfile: Dockerfile
-#    container_name: belery-ceat
-#    hostname: belery-ceat
+#    container_name: queue-b
+#    hostname: queue-b
 #    restart: unless-stopped
 #    command: poetry run celery -A api beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
 #    volumes:
 #      - ./api:/app:z
 #    env_file:
-#      - ./secrets/.env
+#      - ./api/secrets/.env
 #    depends_on:
 #      - redis
 #      - db
 #    networks:
 #      - netwoke
-
-#  redis:
-#    image: redis:7.4.1
-#    container_name: rediss
-#    hostname: rediss
-#    restart: unless-stopped
-#    expose:
-#      - "6379"
-#    networks:
-#      - netwoke
-#    healthcheck:
-#      test: [ "CMD", "redis-cli", "ping" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
