@@ -42,7 +42,6 @@ logging_config = {
     },
 }
 
-
 uvicorn_configuration = {
     "host": "0.0.0.0",
     "port": 8000,
@@ -65,9 +64,8 @@ uvicorn_configuration = {
     "server_header": True,
     "date_header": True,
     "forwarded_allow_ips": ["*"],
-    "log_config": logging_config,
+    # "log_config": logging_config,
 }
-
 
 if __name__ == "__main__":
     import uvicorn

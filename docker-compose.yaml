@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"
-#      - "443:443"
+    #      - "443:443"
     depends_on:
       - backend
     volumes:
@@ -39,8 +39,8 @@ services:
 
   backend:
     build:
-        context: ./api
-        dockerfile: Dockerfile
+      context: ./api
+      dockerfile: Dockerfile
     container_name: backend
     hostname: backend
     restart: unless-stopped
@@ -88,7 +88,7 @@ services:
     container_name: queue
     hostname: queue
     restart: unless-stopped
-    command: poetry run celery -A config worker --loglevel=info -E --max-tasks-per-child=20 -P threads --concurrency=6
+    command: poetry run celery -A config worker --loglevel=DEBUG -E --max-tasks-per-child=20 -P threads --concurrency=6
     volumes:
       - ./api:/app:z
       - static_volume:/app/static:z

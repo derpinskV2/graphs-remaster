@@ -5,11 +5,7 @@ import environ
 import toml
 import logging
 
-from rich.console import Console
-from rich.logging import RichHandler
-
 logger = logging.getLogger(__name__)
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -188,7 +184,6 @@ CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 CELERY_WORKER_LOG_FORMAT = "[%(asctime)s: %(levelname)s/%(processName)s] %(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "[%(asctime)s: %(levelname)s/%(processName)s] [%(task_name)s(%(task_id)s)] %(message)s"
 
-
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 STATIC_URL = "/static/"
@@ -262,88 +257,158 @@ NINJA_EXTRA = {
     "SEARCHING_CLASS": "ninja_extra.searching.Search",
 }
 
+# wide_console = Console(width=200)
+# logging.basicConfig(
+#     level="INFO",
+#     handlers=[RichHandler(console=wide_console, rich_tracebacks=True, markup=True)],
+#     format="%(asctime)s %(levelname)s %(name)s %(message)s " "[PID:%(process)d:%(threadName)s]",
+# )
+#
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "root": {"level": "INFO", "handlers": ["rich", "access_file"]},
+#     "formatters": {
+#         "rich": {
+#             "datefmt": "[%X]",
+#             "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
+#             # " "[PID:%(process)d:%(threadName)s]",
+#         },
+#         "verbose": {
+#             "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
+#             # " "[PID:%(process)d:%(threadName)s]",
+#         },
+#     },
+#     "handlers": {
+#         "rich": {
+#             "class": "rich.logging.RichHandler",
+#             "formatter": "rich",
+#             "level": "INFO",
+#             "rich_tracebacks": True,
+#             "markup": True,
+#             "console": wide_console,
+#         },
+#         "access_file": {
+#             "level": "INFO",
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": "logs/access.log",
+#             "maxBytes": 1024 * 1024 * 5,
+#             "backupCount": 5,
+#             "formatter": "verbose",
+#         },
+#         "error_file": {
+#             "level": "ERROR",
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": "logs/error.log",
+#             "maxBytes": 1024 * 1024 * 5,
+#             "backupCount": 5,
+#             "formatter": "verbose",
+#         },
+#         "celery_file": {
+#             "level": "INFO",
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": "logs/celery.log",
+#             "maxBytes": 1024 * 1024 * 5,
+#             "backupCount": 5,
+#             "formatter": "verbose",
+#         },
+#     },
+#     "loggers": {
+#         "uvicorn.access": {
+#             "handlers": ["rich", "access_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#         "uvicorn.error": {
+#             "handlers": ["rich", "error_file"],
+#             "level": "ERROR",
+#             "propagate": False,
+#         },
+#         "django": {
+#             "handlers": ["rich", "access_file", "error_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#         "celery.app.trace": {
+#             "handlers": ["rich", "celery_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#         "celery.task": {
+#             "handlers": ["rich", "celery_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#     },
+# }
+# wide_console = Console(width=200)
+#
+# logging.basicConfig(
+#     level="INFO",
+#     handlers=[RichHandler(console=wide_console, rich_tracebacks=True, markup=True)],
+#     format="%(asctime)s %(levelname)s %(name)s %(message)s " "[PID:%(process)d:%(threadName)s]",
+# )
 
-wide_console = Console(width=200)
-logging.basicConfig(
-    level="INFO",
-    handlers=[RichHandler(console=wide_console, rich_tracebacks=True, markup=True)],
-    format="%(asctime)s %(levelname)s %(name)s %(message)s " "[PID:%(process)d:%(threadName)s]",
-)
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "root": {"level": "INFO", "handlers": ["rich", "access_file"]},
-    "formatters": {
-        "rich": {
-            "datefmt": "[%X]",
-            "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
-            # " "[PID:%(process)d:%(threadName)s]",
-        },
-        "verbose": {
-            "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
-            # " "[PID:%(process)d:%(threadName)s]",
-        },
-    },
-    "handlers": {
-        "rich": {
-            "class": "rich.logging.RichHandler",
-            "formatter": "rich",
-            "level": "INFO",
-            "rich_tracebacks": True,
-            "markup": True,
-            "console": wide_console,
-        },
-        "access_file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/access.log",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
-            "formatter": "verbose",
-        },
-        "error_file": {
-            "level": "ERROR",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/error.log",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
-            "formatter": "verbose",
-        },
-        "celery_file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": "logs/celery.log",
-            "maxBytes": 1024 * 1024 * 5,
-            "backupCount": 5,
-            "formatter": "verbose",
-        },
-    },
-    "loggers": {
-        "uvicorn.access": {
-            "handlers": ["rich", "access_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "uvicorn.error": {
-            "handlers": ["rich", "error_file"],
-            "level": "ERROR",
-            "propagate": False,
-        },
-        "django": {
-            "handlers": ["rich", "access_file", "error_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "celery.app.trace": {
-            "handlers": ["rich", "celery_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-        "celery.task": {
-            "handlers": ["rich", "celery_file"],
-            "level": "INFO",
-            "propagate": False,
-        },
-    },
-}
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "root": {"level": "INFO", "handlers": ["console"]},
+#     "formatters": {
+#         "rich": {
+#             "datefmt": "[%X]",
+#             "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
+#         },
+#         "verbose": {
+#             "format": "%(asctime)s %(levelname)s %(name)s:%(lineno)d %(message)s",
+#         },
+#     },
+#     "handlers": {
+#         # Console handler for terminal output
+#         "console": {
+#             "class": "rich.logging.RichHandler",
+#             "formatter": "rich",
+#             "level": "INFO",
+#             "rich_tracebacks": True,
+#             "markup": True,
+#             "console": wide_console,
+#         },
+#         # File handler for Django logs
+#         "django_file": {
+#             "level": "INFO",
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": "logs/django.log",
+#             "maxBytes": 1024 * 1024 * 5,
+#             "backupCount": 5,
+#             "formatter": "verbose",
+#         },
+#         # File handler for Celery logs
+#         "celery_file": {
+#             "level": "INFO",
+#             "class": "logging.handlers.RotatingFileHandler",
+#             "filename": "logs/celery.log",
+#             "maxBytes": 1024 * 1024 * 5,
+#             "backupCount": 5,
+#             "formatter": "verbose",
+#         },
+#     },
+#     "loggers": {
+#         # Logger for Django
+#         "django": {
+#             "handlers": ["console", "django_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#         # Logger for Celery
+#         "celery": {
+#             "handlers": ["console", "celery_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#         # Celery task-specific logger
+#         "celery.task": {
+#             "handlers": ["console", "celery_file"],
+#             "level": "INFO",
+#             "propagate": False,
+#         },
+#     },
+# }

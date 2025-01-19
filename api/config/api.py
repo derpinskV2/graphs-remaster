@@ -5,6 +5,7 @@ from ninja.renderers import BaseRenderer
 from ninja_extra import NinjaExtraAPI
 from django.conf import settings
 from ninja_jwt.controller import NinjaJWTDefaultController
+from .celery import debug_task
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +35,6 @@ v1 = NinjaExtraAPI(
 v1.register_controllers("data.api.controllers.CSVFileController")
 v1.register_controllers("data.api.controllers.CSVDataController")
 v1.register_controllers(NinjaJWTDefaultController)
-
-from .celery import debug_task
 
 
 @v1.get("/debug-celery")

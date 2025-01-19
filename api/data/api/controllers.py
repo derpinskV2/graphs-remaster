@@ -1,21 +1,23 @@
 import logging
 
-from django.shortcuts import aget_object_or_404, get_object_or_404
+from django.shortcuts import aget_object_or_404
+
 from ninja import Form
 from ninja_extra import ControllerBase, api_controller, http_get, http_post, http_delete, paginate
 from ninja_extra.pagination import PageNumberPaginationExtra
+from ninja_extra.permissions import IsAuthenticated
 from ninja_extra.schemas import PaginatedResponseSchema
 from ninja_jwt.authentication import JWTAuth
 
 from data.models import CSVFile, CSVData
 from data.api.schemas import CSVFileSchema, CSVDataSchema
-from data.tasks import process_csv_file
-
 
 logger = logging.getLogger(__name__)
 
+from data.tasks import process_csv_file
 
-@api_controller("/csv-files", tags=["CSV Files"], auth=JWTAuth())
+
+@api_controller("/csv-files", tags=["CSV Files"], auth=JWTAuth(), permissions=[IsAuthenticated])
 class CSVFileController(ControllerBase):
 
     @http_get(response=list[CSVFileSchema])
@@ -30,16 +32,11 @@ class CSVFileController(ControllerBase):
     async def create_csv_file(self, request, data: Form[CSVFileSchema]):
         return await CSVFile.objects.acreate(file=request.FILES["file"])
 
-    @http_post("/{id}/process")
-    def queue_csv_file(self, request, id: int):
-        csv_file = get_object_or_404(CSVFile, id=id)
-        # process_csv_file.apply_async(
-        #     args=(
-        #         csv_file.id,
-        #         request.user.id,
-        #     )
-        # )
-        process_csv_file.delay(csv_file.id, request.user.id)
+    @http_post(
+        "/process/all",
+    )
+    def queue_csv_files(self, request):
+        process_csv_file.delay(request.user.id)
         return {"message": f"CSV file {id} queued."}
 
     @http_delete("/{id}")
