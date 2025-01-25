@@ -1,22 +1,22 @@
+version: "3.9"
+
 services:
-  nginx:
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    container_name: nginx
-    hostname: nginx
-    restart: unless-stopped
+  caddy:
+    image: caddy:2.9.1-alpine
+    container_name: caddy
+    hostname: caddy
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./api/static:/app/static:ro
+      - ./api/media:/app/media:ro
+      - caddy_data:/data
+      - caddy_config:/config
     ports:
       - "80:80"
-    #      - "443:443"
     depends_on:
       - backend
-    volumes:
-      - static_volume:/app/static:ro
-      - media_volume:/app/media:ro
-      - ./nginx/certs/:/etc/nginx/certs:ro
     networks:
-      - netwoke
+      - bridge
 
   db:
     image: postgres:17.2-alpine3.21
@@ -30,7 +30,7 @@ services:
     env_file:
       - ./api/secrets/.env
     networks:
-      - netwoke
+      - bridge
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 30s
@@ -44,7 +44,6 @@ services:
     container_name: backend
     hostname: backend
     restart: unless-stopped
-    #poetry run python manage.py startup &&
     command: >
       sh -c "poetry run python manage.py makemigrations &&
              poetry run python manage.py migrate &&
@@ -58,13 +57,13 @@ services:
       - "8000"
     volumes:
       - ./api:/app:z
-      - static_volume:/app/static:z
-      - media_volume:/app/media:z
+      - ./api/static:/app/static:z
+      - ./api/media:/app/media:z
     depends_on:
       - db
       - redis
     networks:
-      - netwoke
+      - bridge
 
   redis:
     image: redis:7.4.1
@@ -74,7 +73,7 @@ services:
     expose:
       - "6379"
     networks:
-      - netwoke
+      - bridge
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
@@ -96,7 +95,7 @@ services:
     env_file:
       - ./api/secrets/.env
     networks:
-      - netwoke
+      - bridge
     depends_on:
       - backend
       - redis
@@ -106,25 +105,9 @@ volumes:
   static_volume:
   media_volume:
   pgdata:
+  caddy_data:
+  caddy_config:
 
 networks:
-  netwoke:
+  bridge:
     driver: bridge
-
-#  celery-beat:
-#    build:
-#        context: ./api
-#        dockerfile: Dockerfile
-#    container_name: queue-b
-#    hostname: queue-b
-#    restart: unless-stopped
-#    command: poetry run celery -A api beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
-#    volumes:
-#      - ./api:/app:z
-#    env_file:
-#      - ./api/secrets/.env
-#    depends_on:
-#      - redis
-#      - db
-#    networks:
-#      - netwoke
