@@ -33,7 +33,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS")
 
 
-DEBUG: bool = env.bool("DEBUG")
+DEBUG: bool = env.bool("DEBUG", default=False)
 SECRET_KEY: str = env.str("SECRET_KEY")
 INTERNAL_IPS = ["127.0.0.1"]
 ROOT_URLCONF = "config.urls"
@@ -71,6 +71,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "event.middleware.RequestLoggingMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -184,8 +185,6 @@ CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 CELERY_WORKER_LOG_FORMAT = "[%(asctime)s: %(levelname)s/%(processName)s] %(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "[%(asctime)s: %(levelname)s/%(processName)s] [%(task_name)s(%(task_id)s)] %(message)s"
 
-DATABASES = {"default": env.db("DATABASE_URL")}
-
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "static"
 
@@ -256,6 +255,36 @@ NINJA_EXTRA = {
     "ORDERING_CLASS": "ninja_extra.ordering.Ordering",
     "SEARCHING_CLASS": "ninja_extra.searching.Search",
 }
+
+DATABASES = {"default": env.db("DATABASE_URL")}
+
+if DEBUG is False:
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS_PROD")
+    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS_PROD")
+    CORS_ALLOW_ALL_ORIGINS = False
+    DATABASES["default"].update(
+        {
+            "CONN_MAX_AGE": 600,
+            "OPTIONS": {
+                "connect_timeout": 10,
+            },
+        }
+    )
+
+    X_FRAME_OPTIONS = "DENY"
+    SECURE_REFERRER_POLICY = "same-origin"
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_REDIRECT_EXEMPT: list[str] = []
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_HTTPONLY = True
 
 # wide_console = Console(width=200)
 # logging.basicConfig(

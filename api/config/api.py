@@ -28,9 +28,9 @@ v1 = NinjaExtraAPI(
     description="I am actually going to finish this side project™",
     parser=ORJSONParser(),
     renderer=ORJSONRenderer(),
-    docs_url="/docs/",
+    docs_url="/docs/" if settings.DEBUG else None,
+    openapi_url="/openapi.json" if settings.DEBUG else None,
 )
-
 
 v1.register_controllers("data.api.controllers.CSVFileController")
 v1.register_controllers("data.api.controllers.CSVDataController")
