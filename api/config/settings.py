@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "websocket.apps.WebsocketConfig",
     "event.apps.EventConfig",
     # Third party
+    "storages",
     "corsheaders",
     "ninja",
     "ninja_jwt",
@@ -185,23 +186,29 @@ CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 CELERY_WORKER_LOG_FORMAT = "[%(asctime)s: %(levelname)s/%(processName)s] %(message)s"
 CELERY_WORKER_TASK_LOG_FORMAT = "[%(asctime)s: %(levelname)s/%(processName)s] [%(task_name)s(%(task_id)s)] %(message)s"
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "static"
+AWS_ACCESS_KEY_ID = env.str("S3_ACCESS_KEY")
+AWS_SECRET_ACCESS_KEY = env.str("S3_SECRET_KEY")
+AWS_STORAGE_BUCKET_NAME = env.str("S3_BUCKET_NAME")
+AWS_S3_REGION_NAME = env.str("S3_REGION_NAME")
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
-MEDIA_URL = f"{APP_URL}/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-STATICFILES_DIRS = [BASE_DIR / "extra_static"]
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = True
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-        "OPTIONS": {"location": BASE_DIR / "media", "base_url": MEDIA_URL},
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {"location": "media"},
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        "OPTIONS": {"location": BASE_DIR / "static", "base_url": STATIC_URL},
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {"location": "static"},
     },
 }
+
+STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/media/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
