@@ -3,8 +3,8 @@ repos:
     rev: v5.0.0
     hooks:
       - id: pretty-format-json
-        args: [--autofix]
-        exclude: &ex (^migrations/|^static/|^nginx/|^media/|^node_modules/|^__pycache__/|^.pytest_cache/|^\.mypy_cache/|.vscode/|extra_static/|\.git/|\.github/|\.idea/)
+        args: [ --autofix ]
+        exclude: &ex (^app|^migrations/|^static/|^nginx/|^media/|^node_modules/|^__pycache__/|^.pytest_cache/|^\.mypy_cache/|.vscode/|extra_static/|\.git/|\.github/|\.idea/)
       - id: check-yaml
         exclude: *ex
       - id: check-toml
@@ -17,7 +17,7 @@ repos:
         exclude: *ex
       - id: check-merge-conflict
       - id: mixed-line-ending
-        args: [--fix=lf]
+        args: [ --fix=lf ]
       - id: detect-private-key
         exclude: ^nginx/
 
@@ -25,21 +25,21 @@ repos:
     rev: 25.1.0
     hooks:
       - id: black
-        args: [--config=./api/pyproject.toml]
+        args: [ --config=./api/pyproject.toml ]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.1
     hooks:
       - id: pyupgrade
-        args: [--py312-plus]
+        args: [ --py312-plus ]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.1.1
     hooks:
       - id: flake8
         additional_dependencies:
-          [flake8-django, flake8-bugbear, flake8-simplify]
-        args: [--config=setup.cfg]
+          [ flake8-django, flake8-bugbear, flake8-simplify ]
+        args: [ --config=setup.cfg ]
 
   - repo: local
     hooks:

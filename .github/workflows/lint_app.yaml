@@ -1,0 +1,32 @@
+name: Lint app
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@main
+        with:
+          node-version: "23"
+
+      - name: Install dependencies
+        run: |
+          cd app
+          npm install -g pnpm
+          pnpm install
+
+      - name: Run lint
+        run: |
+          cd app
+          pnpm lint

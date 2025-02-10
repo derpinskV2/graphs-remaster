@@ -33,7 +33,7 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BRANCH_NAME="${ISSUE_NUMBER}-$(echo "${ISSUE_TITLE}" | tr ' ' '-' | tr '[:upper:]' '[:lower:]')"
           echo "Branch name: $BRANCH_NAME"
@@ -50,18 +50,21 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_CREATOR: ${{ github.event.issue.user.login }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github.v3+json" \
+          curl -L \
+           -X POST \
+           -H "Authorization: Bearer $GITHUB_TOKEN" \
+           -H "Accept: application/vnd.github+json" \
+           -H "X-GitHub-Api-Version: 2022-11-28" \
           https://api.github.com/repos/derpinskV2/slow-api/issues/$ISSUE_NUMBER/assignees \
-          -d '{"assignees":["'"$ISSUE_CREATOR"'"]}'
+          -d '{"assignees":["${ISSUE_CREATOR}"]}'
 
       - name: Link issue to project
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           curl -X POST -H "Authorization: Bearer $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.v3+json" \
@@ -72,7 +75,7 @@ jobs:
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           BRANCH_NAME: ${{ steps.generate_branch.outputs.branch_name }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           ISSUE_URL="https://github.com/derpinskV2/slow-api/issues/${ISSUE_NUMBER}"
           BRANCH_URL="https://github.com/derpinskV2/slow-api/tree/${BRANCH_NAME}"
