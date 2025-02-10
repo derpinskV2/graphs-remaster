@@ -1,4 +1,5 @@
 import logging
+
 import urllib.parse
 from orjson import orjson
 from orjson.orjson import JSONDecodeError
@@ -40,8 +41,8 @@ class RequestLoggingMiddleware:
         except JSONDecodeError:
             response_data = response.content.decode("utf-8")
 
-        query_params = urllib.parse.parse_qs(request.META.get("QUERY_STRING", ""))
-        simplified_query_params = {k: v[0] if len(v) == 1 else v for k, v in query_params.items()}
+        query_params = urllib.parse.parse_qs(request.META.get("QUERY_STRING", ""))  # noqa
+        # simplified_query_params = {k: v[0] if len(v) == 1 else v for k, v in query_params.items()}
 
         return {
             "user": user,
@@ -51,7 +52,7 @@ class RequestLoggingMiddleware:
             "ip_address": str(request.META.get("REMOTE_ADDR")),
             "path": str(request.META.get("PATH_INFO")),
             "http_method": str(request.META.get("REQUEST_METHOD")),
-            "query_params": simplified_query_params,
+            # "query_params": simplified_query_params,
             "status_code": response.status_code,
         }
 

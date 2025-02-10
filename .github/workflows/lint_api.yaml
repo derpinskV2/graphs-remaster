@@ -2,11 +2,8 @@ name: Lint api
 
 on:
   pull_request:
-    paths-ignore:
-      - "api/pyproject.toml"
     paths:
-      - "api/**",
-
+      - "api/**.py"
   push:
     branches:
       - main
